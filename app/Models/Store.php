@@ -43,6 +43,11 @@ class Store extends Model
         return $this->hasMany(Payment::class);
     }
 
+    public function equipment(): HasMany
+    {
+        return $this->hasMany(\App\Models\Equipment::class);
+    }
+
     // Scopes
     public function scopeActive($query)
     {
@@ -58,5 +63,23 @@ class Store extends Model
     public function getDisplayNameAttribute()
     {
         return $this->name ?: $this->store_number;
+    }
+
+    /**
+     * Get the users (store managers) assigned to this store.
+     */
+    public function managers()
+    {
+        return $this->belongsToMany(User::class, 'store_manager', 'store_id', 'user_id')
+                    ->withTimestamps()
+                    ->withPivot('assigned_by', 'assigned_at');
+    }
+
+    /**
+     * Get the invoice cards for this store.
+     */
+    public function invoiceCards()
+    {
+        return $this->hasMany(\Modules\Invoice\Models\InvoiceCard::class);
     }
 }

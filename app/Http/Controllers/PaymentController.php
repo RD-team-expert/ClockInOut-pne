@@ -56,6 +56,15 @@ class PaymentController extends Controller
             $query->where('maintenance_type', $request->maintenance_type);
         }
 
+        // Filter by equipment presence
+        if ($request->filled('has_equipment') && $request->has_equipment !== 'all') {
+            if ($request->has_equipment === '1') {
+                $query->whereHas('equipmentItems');
+            } else {
+                $query->whereDoesntHave('equipmentItems');
+            }
+        }
+
         // Date range filters
         if ($request->filled('date_from')) {
             $query->whereDate('date', '>=', $request->date_from);
@@ -94,7 +103,21 @@ class PaymentController extends Controller
         }
 
         $payments = $query->orderBy('date', 'desc')->paginate(20)->withQueryString();
+        foreach ($payments as $payment) {
+            if (!$payment->store && $payment->store_id) {
+                // Try to find the store using the store_id
+                $payment->store = Store::find($payment->store_id);
 
+                // If still no store found, create a temporary object for display
+                if (!$payment->store) {
+                    $payment->store = (object)[
+                        'id' => $payment->store_id,
+                        'store_number' => 'Store #' . $payment->store_id,
+                        'name' => 'Store ID: ' . $payment->store_id
+                    ];
+                }
+            }
+        }
         // Calculate statistics
         $stats = $this->calculateStats($request);
         $companies = Company::orderBy('name')->get();
@@ -112,8 +135,10 @@ class PaymentController extends Controller
         // Check for store_id field
         $availableStores = Store::whereHas('payments')
             ->orderBy('store_number') // Remove the backslash
-            ->pluck('store_number')
+            ->pluck('name')
             ->toArray();
+//        dd($payments);
+
         return view('admin.payments.index', compact(
             'payments',
             'stats',
@@ -149,7 +174,12 @@ class PaymentController extends Controller
             'notes' => 'nullable|string',
             'paid' => 'boolean',
             'payment_method' => 'nullable|string|max:255',
-            'maintenance_type' => 'nullable|string|max:255'
+            'maintenance_type' => 'nullable|string|max:255',
+            'maintenance_request_id' => 'nullable|exists:maintenance_requests,id',
+            'equipment_items' => 'nullable|array',
+            'equipment_items.*.name' => 'nullable|string|max:255',
+            'equipment_items.*.quantity' => 'nullable|integer|min:1',
+            'equipment_items.*.unit_cost' => 'nullable|numeric|min:0',
         ]);
 
         DB::beginTransaction();
@@ -172,7 +202,52 @@ class PaymentController extends Controller
 
             unset($data['new_store_number'], $data['new_store_name']);
 
-            Payment::create($data);
+            $payment = Payment::create($data);
+
+            // If payment created from clocking session
+            if ($request->filled('clocking_id')) {
+                $payment->clocking_id = $request->clocking_id;
+                $payment->source_system = 'clocking_system';
+                $payment->sync_status = 'synced';
+                $payment->save();
+
+                // Update clocking total purchase cost
+                app(\App\Services\PurchaseSynchronizationService::class)->updateClockingPurchaseCost($request->clocking_id);
+            }
+
+            // If payment created from invoice card
+            if ($request->filled('invoice_card_id')) {
+                $payment->invoice_card_id = $request->invoice_card_id;
+                $payment->source_system = 'invoice_system';
+                $payment->sync_status = 'synced';
+                $payment->save();
+            }
+
+            // Handle equipment items if provided
+            if ($request->has('equipment_items') && is_array($request->equipment_items)) {
+                $hasEquipment = false;
+                foreach ($request->equipment_items as $item) {
+                    // Only create if item has a name
+                    if (!empty($item['name'])) {
+                        $quantity = (int) ($item['quantity'] ?? 1);
+                        $unitCost = (float) ($item['unit_cost'] ?? 0);
+                        
+                        $payment->equipmentItems()->create([
+                            'item_name' => $item['name'],
+                            'quantity' => $quantity,
+                            'unit_cost' => $unitCost,
+                            'total_cost' => $quantity * $unitCost,
+                        ]);
+                        $hasEquipment = true;
+                    }
+                }
+                
+                // If equipment items were added, mark as admin equipment
+                if ($hasEquipment) {
+                    $payment->is_admin_equipment = true;
+                    $payment->save();
+                }
+            }
 
             DB::commit();
 
@@ -187,12 +262,13 @@ class PaymentController extends Controller
 
     public function show(Payment $payment)
     {
-        $payment->load(['company', 'store']);
+        $payment->load(['company', 'store', 'equipmentItems']);
         return view('admin.payments.show', compact('payment'));
     }
 
     public function edit(Payment $payment)
     {
+        $payment->load('equipmentItems');
         $companies = Company::orderBy('name')->get();
         $stores = Store::orderBy('store_number')->get();
         $fixedOptions = Payment::select('what_got_fixed')
@@ -216,7 +292,12 @@ class PaymentController extends Controller
             'notes' => 'nullable|string',
             'paid' => 'boolean',
             'payment_method' => 'nullable|string|max:255',
-            'maintenance_type' => 'nullable|string|max:255'
+            'maintenance_type' => 'nullable|string|max:255',
+            'maintenance_request_id' => 'nullable|exists:maintenance_requests,id',
+            'equipment_items' => 'nullable|array',
+            'equipment_items.*.name' => 'nullable|string|max:255',
+            'equipment_items.*.quantity' => 'nullable|integer|min:1',
+            'equipment_items.*.unit_cost' => 'nullable|numeric|min:0',
         ]);
 
         DB::beginTransaction();
@@ -240,6 +321,50 @@ class PaymentController extends Controller
             unset($data['new_store_number'], $data['new_store_name']);
 
             $payment->update($data);
+
+            // If updated with clocking or invoice_card references, set source and sync accordingly
+            if ($request->filled('clocking_id')) {
+                $payment->clocking_id = $request->clocking_id;
+                $payment->source_system = 'clocking_system';
+                $payment->sync_status = 'synced';
+                $payment->save();
+                app(\App\Services\PurchaseSynchronizationService::class)->updateClockingPurchaseCost($request->clocking_id);
+            }
+
+            if ($request->filled('invoice_card_id')) {
+                $payment->invoice_card_id = $request->invoice_card_id;
+                $payment->source_system = 'invoice_system';
+                $payment->sync_status = 'synced';
+                $payment->save();
+            }
+
+            // Handle equipment items update
+            // Delete existing equipment items
+            $payment->equipmentItems()->delete();
+            
+            // Re-create equipment items from request
+            $hasEquipment = false;
+            if ($request->has('equipment_items') && is_array($request->equipment_items)) {
+                foreach ($request->equipment_items as $item) {
+                    // Only create if item has a name
+                    if (!empty($item['name'])) {
+                        $quantity = (int) ($item['quantity'] ?? 1);
+                        $unitCost = (float) ($item['unit_cost'] ?? 0);
+                        
+                        $payment->equipmentItems()->create([
+                            'item_name' => $item['name'],
+                            'quantity' => $quantity,
+                            'unit_cost' => $unitCost,
+                            'total_cost' => $quantity * $unitCost,
+                        ]);
+                        $hasEquipment = true;
+                    }
+                }
+            }
+            
+            // Update is_admin_equipment flag based on whether equipment items exist
+            $payment->is_admin_equipment = $hasEquipment;
+            $payment->save();
 
             DB::commit();
 
@@ -472,9 +597,23 @@ class PaymentController extends Controller
                 if ($request->filled('max_cost')) {
                     $query->where('cost', '<=', $request->max_cost);
                 }
+
+                if ($request->filled('has_equipment') && $request->has_equipment !== 'all') {
+                    if ($request->has_equipment === '1') {
+                        $query->whereHas('equipmentItems');
+                    } else {
+                        $query->whereDoesntHave('equipmentItems');
+                    }
+                }
             }
             return $query;
         };
+
+        // Calculate equipment statistics
+        $equipmentPaymentsQuery = $applyFilters(Payment::query())->whereHas('equipmentItems');
+        $equipmentTotal = \DB::table('payment_equipment_items')
+            ->whereIn('payment_id', $equipmentPaymentsQuery->pluck('id'))
+            ->sum('total_cost');
 
         return [
             'total'          => $applyFilters(Payment::query())->count(),
@@ -485,17 +624,19 @@ class PaymentController extends Controller
             'this_month_cost'=> $applyFilters(Payment::query())->thisMonth()->sum('cost'),
             'within_90_days' => $applyFilters(Payment::query())->within90Days()->count(),
             'unpaid_amount'  => $applyFilters(Payment::query())->where('paid', false)->sum('cost'),
-            'paid_amount'    => $applyFilters(Payment::query())->where('paid', true)->sum('cost')
+            'paid_amount'    => $applyFilters(Payment::query())->where('paid', true)->sum('cost'),
+            'equipment_purchases' => $equipmentPaymentsQuery->count(),
+            'equipment_total' => $equipmentTotal
         ];
     }
 
     public function storeImageView($store)
     {
         try {
-            $payments = Payment::where('store', $store)
-                ->orWhereHas('store', function($q) use ($store) {
-                    $q->where('store_number', $store);
-                })
+            $payments = Payment::whereHas('store', function($q) use ($store) {
+                $q->where('name', $store)
+                    ->orWhere('store_number', $store);
+            })
                 ->with(['company', 'store'])
                 ->orderByDesc('date')
                 ->get();
@@ -512,7 +653,6 @@ class PaymentController extends Controller
 
             return view('admin.payments.reports.store-image', compact('store', 'grouped', 'grandTotal'));
         } catch (\Exception $e) {
-
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -745,54 +885,75 @@ class PaymentController extends Controller
         $paid = $request->query('paid');
         $maintenanceType = $request->query('maintenance_type');
 
-        // Base query
-        $query = Payment::with(['company', 'store']);
+        // Base query for ALL payments (no date filters for time period calculations)
+        $baseQuery = Payment::with(['company', 'store']);
 
-        // Apply date filters (most important)
-        if ($dateFrom) {
-            $query->whereDate('date', '>=', $dateFrom);
-        }
-        if ($dateTo) {
-            $query->whereDate('date', '<=', $dateTo);
-        }
-
-        // Apply other filters
+        // Apply non-date filters
         if ($companyId && $companyId !== 'all') {
-            $query->where('company_id', $companyId);
+            $baseQuery->where('company_id', $companyId);
         }
 
         if ($paid && $paid !== 'all') {
-            $query->where('paid', $paid === '1');
+            $baseQuery->where('paid', $paid === '1');
         }
 
         if ($maintenanceType && $maintenanceType !== 'all') {
-            $query->where('maintenance_type', $maintenanceType);
+            $baseQuery->where('maintenance_type', $maintenanceType);
         }
 
-        // Get filtered payments
-        $filteredPayments = $query->get();
+        // Get ALL payments for time period calculations
+        $allPayments = $baseQuery->get();
 
         // Debug: Log the query results
-        \Log::info('Filtered payments count: ' . $filteredPayments->count());
-        \Log::info('Sample payment: ', $filteredPayments->first()?->toArray() ?? ['no data']);
+        Log::info('All payments count: ' . $allPayments->count());
 
         // FIXED: Handle stores properly - check if store_id exists but store is null
-        $stores = collect();
+        $storeIds = collect();
+        $storeMap = collect();
 
-        foreach ($filteredPayments as $payment) {
-            if ($payment->store && $payment->store->store_number) {
-                // Store relationship exists and has store_number
-                $stores->push($payment->store->store_number);
+        foreach ($allPayments as $payment) {
+            if ($payment->store) {
+                $storeMap->put($payment->store_id, $payment->store);
             } elseif ($payment->store_id) {
-                // Store ID exists but relationship might be null - use ID as fallback
-                $stores->push("Store-" . $payment->store_id);
-            } else {
-                // No store relationship - use a generic identifier
-                $stores->push("Unknown Store");
+                $storeIds->push($payment->store_id);
             }
         }
 
-        $stores = $stores->unique()->filter()->sort();
+        // Batch load missing stores
+        if ($storeIds->isNotEmpty()) {
+            $missingStores = Store::whereIn('id', $storeIds->unique())->get();
+            foreach ($missingStores as $store) {
+                $storeMap->put($store->id, $store);
+            }
+        }
+
+        // Build stores collection with actual names
+        $stores = collect();
+        foreach ($allPayments as $payment) {
+            if ($payment->store_id && $storeMap->has($payment->store_id)) {
+                $store = $storeMap->get($payment->store_id);
+                $stores->push([
+                    'id' => $store->id,
+                    'name' => $store->name,
+                    'store_number' => $store->store_number ?? null
+                ]);
+            } elseif ($payment->store_id) {
+                $stores->push([
+                    'id' => $payment->store_id,
+                    'name' => "Store ID: " . $payment->store_id,
+                    'store_number' => null
+                ]);
+            } else {
+                $stores->push([
+                    'id' => null,
+                    'name' => "Unknown Store",
+                    'store_number' => null
+                ]);
+            }
+        }
+
+        $stores = $stores->unique('id')->sortBy('name');
+        $storeNames = $stores->pluck('name');
 
         // Group by store for the report
         $storeData = [];
@@ -803,54 +964,77 @@ class PaymentController extends Controller
         $totalFourWeeksCost = 0;
         $totalNinetyDaysCost = 0;
 
-        foreach ($stores as $store) {
-            $storePayments = $filteredPayments->filter(function($payment) use ($store) {
-                if ($payment->store && is_object($payment->store)) {
-                    return $payment->store->store_number === $store;
-                } elseif ($payment->store_id) {
-                    return "Store-" . $payment->store_id === $store;
-                } else {
-                    return $store === "Unknown Store";
-                }
-            });
+        foreach ($stores as $storeInfo) {
+            $storeId = $storeInfo['id'];
 
-            // Main filtered period cost
-            $totalCost = $storePayments->sum('cost');
-            $equipmentCost = $storePayments->where('maintenance_type', 'Equipment/Parts')->sum('cost');
-            $serviceCost = $storePayments->where('maintenance_type', 'Service')->sum('cost');
+            // Create base query for this store with all filters applied
+            $storeQuery = Payment::query();
 
-            // Additional time period calculations
-            $thisMonthPayments = $storePayments->filter(function($payment) {
-                return $payment->date->isCurrentMonth();
-            });
+            // Apply all the same filters
+            if ($companyId && $companyId !== 'all') {
+                $storeQuery->where('company_id', $companyId);
+            }
+            if ($paid && $paid !== 'all') {
+                $storeQuery->where('paid', $paid === '1');
+            }
+            if ($maintenanceType && $maintenanceType !== 'all') {
+                $storeQuery->where('maintenance_type', $maintenanceType);
+            }
 
-            $fourWeeksPayments = $storePayments->filter(function($payment) {
-                return $payment->date >= now()->subWeeks(4);
-            });
+            // Filter by store
+            if ($storeId === null) {
+                $storeQuery->whereNull('store_id');
+            } else {
+                $storeQuery->where('store_id', $storeId);
+            }
 
-            $ninetyDaysPayments = $storePayments->filter(function($payment) {
-                return $payment->date >= now()->subDays(90);
-            });
+            // Calculate "This Week" data (filtered period) using date filters
+            $filteredPeriodQuery = clone $storeQuery;
+            if ($dateFrom) {
+                $filteredPeriodQuery->whereDate('date', '>=', $dateFrom);
+            }
+            if ($dateTo) {
+                $filteredPeriodQuery->whereDate('date', '<=', $dateTo);
+            }
+            if (!$dateFrom && !$dateTo) {
+                // If no date filters provided, use current week
+                $filteredPeriodQuery->thisWeek();
+            }
+
+            $filteredPeriodPayments = $filteredPeriodQuery->get();
+            $totalCost = $filteredPeriodPayments->sum('cost');
+            $equipmentCost = $filteredPeriodPayments->filter(function($payment) {
+                return strtolower($payment->maintenance_type) === 'equipment/parts';
+            })->sum('cost');
+            $serviceCost = $filteredPeriodPayments->where('maintenance_type', 'Service')->sum('cost');
+//dd($equipmentCost);
+            // Use model scopes for time period calculations
+            $thisMonthCost = (clone $storeQuery)->thisMonth()->sum('cost');
+            $fourWeeksCost = (clone $storeQuery)->within4Weeks()->sum('cost');
+            $ninetyDaysCost = (clone $storeQuery)->within90Days()->sum('cost');
 
             $storeData[] = [
-                'store' => $store,
+                'store' => $storeInfo['name'],
+                'store_id' => $storeInfo['id'],
+                'store_number' => $storeInfo['store_number'],
                 'total_cost' => $totalCost,
                 'equipment_cost' => $equipmentCost,
                 'service_cost' => $serviceCost,
-                'this_month_cost' => $thisMonthPayments->sum('cost'),
-                'four_weeks_cost' => $fourWeeksPayments->sum('cost'),
-                'ninety_days_cost' => $ninetyDaysPayments->sum('cost'),
+                'this_month_cost' => $thisMonthCost,
+                'four_weeks_cost' => $fourWeeksCost,
+                'ninety_days_cost' => $ninetyDaysCost,
             ];
 
+            // Calculate totals
             $totalWeeklyCost += $totalCost;
-            $totalMonthlyCost += $thisMonthPayments->sum('cost');
+            $totalMonthlyCost += $thisMonthCost;
             $totalEquipmentCost += $equipmentCost;
             $totalServiceCost += $serviceCost;
-            $totalFourWeeksCost += $fourWeeksPayments->sum('cost');
-            $totalNinetyDaysCost += $ninetyDaysPayments->sum('cost');
+            $totalFourWeeksCost += $fourWeeksCost;
+            $totalNinetyDaysCost += $ninetyDaysCost;
         }
 
-        // FIXED: Set week and year based on filter dates, not current
+        // Set week and year based on filter dates
         if ($dateFrom) {
             $currentWeek = \Carbon\Carbon::parse($dateFrom)->weekOfYear;
             $targetYear = \Carbon\Carbon::parse($dateFrom)->year;
@@ -866,7 +1050,7 @@ class PaymentController extends Controller
             ->pluck('year');
 
         return view('admin.payments.reports.weekly-maintenance', compact(
-            'stores',
+            'storeNames',
             'storeData',
             'currentWeek',
             'targetYear',
@@ -948,15 +1132,17 @@ class PaymentController extends Controller
 
         // FIXED: Get store yearly costs with proper grouping
         $storeYearlyCosts = $query
+            ->leftJoin('stores', 'payments.store_id', '=', 'stores.id')
             ->selectRaw('
-            COALESCE(store, CONCAT("Store ", store_id)) as store_display,
-            SUM(cost) as total_cost,
-            COUNT(*) as payment_count,
-            AVG(cost) as avg_cost
-        ')
+        COALESCE(stores.name, CONCAT("Store ", payments.store_id)) as store_display,
+        payments.store_id,
+        SUM(cost) as total_cost,
+        COUNT(*) as payment_count,
+        AVG(cost) as avg_cost
+    ')
             ->whereNotNull('cost')
             ->where('cost', '>', 0)
-            ->groupByRaw('COALESCE(store, CONCAT("Store ", store_id))')
+            ->groupBy('payments.store_id', 'stores.name')
             ->orderBy('total_cost', 'desc')
             ->get();
 

@@ -32,10 +32,10 @@
         </div>
 
         <!-- Enhanced Status Counts with Icons and Better Colors -->
-        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-6 gap-6 mb-6 items-stretch">
             <!-- Total -->
-            <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
-                <div class="flex items-center">
+            <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow h-full flex flex-col">
+                <div class="flex items-center flex-1">
                     <div class="flex-shrink-0">
                         <div class="w-12 h-12 bg-gray-600 rounded-lg flex items-center justify-center">
                             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -43,7 +43,7 @@
                             </svg>
                         </div>
                     </div>
-                    <div class="ml-4">
+                    <div class="ml-4 flex-1">
                         <p class="text-sm font-medium text-gray-600">Total</p>
                         <p class="text-3xl font-bold text-gray-900">{{ $statusCounts['all'] ?? 0 }}</p>
                     </div>
@@ -51,8 +51,8 @@
             </div>
 
             <!-- On Hold -->
-            <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl shadow-sm border border-yellow-200 p-6 hover:shadow-md transition-shadow">
-                <div class="flex items-center">
+            <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl shadow-sm border border-yellow-200 p-6 hover:shadow-md transition-shadow h-full flex flex-col">
+                <div class="flex items-center flex-1">
                     <div class="flex-shrink-0">
                         <div class="w-12 h-12 bg-yellow-500 rounded-lg flex items-center justify-center">
                             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -60,16 +60,33 @@
                             </svg>
                         </div>
                     </div>
-                    <div class="ml-4">
+                    <div class="ml-4 flex-1">
                         <p class="text-sm font-medium text-yellow-700">On Hold</p>
                         <p class="text-3xl font-bold text-yellow-900">{{ $statusCounts['on_hold'] ?? 0 }}</p>
                     </div>
                 </div>
             </div>
+ 
+            <!-- Received -->
+            <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl shadow-sm border border-purple-200 p-6 hover:shadow-md transition-shadow h-full flex flex-col">
+                <div class="flex items-center flex-1">
+                    <div class="flex-shrink-0">
+                        <div class="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="ml-4 flex-1">
+                        <p class="text-sm font-medium text-purple-700">Received</p>
+                        <p class="text-3xl font-bold text-purple-900">{{ $statusCounts['received'] ?? 0 }}</p>
+                    </div>
+                </div>
+            </div>
 
             <!-- In Progress -->
-            <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-sm border border-blue-200 p-6 hover:shadow-md transition-shadow">
-                <div class="flex items-center">
+            <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-sm border border-blue-200 p-6 hover:shadow-md transition-shadow h-full flex flex-col">
+                <div class="flex items-center flex-1">
                     <div class="flex-shrink-0">
                         <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center">
                             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -77,7 +94,7 @@
                             </svg>
                         </div>
                     </div>
-                    <div class="ml-4">
+                    <div class="ml-4 flex-1">
                         <p class="text-sm font-medium text-blue-700">In Progress</p>
                         <p class="text-3xl font-bold text-blue-900">{{ $statusCounts['in_progress'] ?? 0 }}</p>
                     </div>
@@ -85,8 +102,8 @@
             </div>
 
             <!-- Done -->
-            <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl shadow-sm border border-green-200 p-6 hover:shadow-md transition-shadow">
-                <div class="flex items-center">
+            <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl shadow-sm border border-green-200 p-6 hover:shadow-md transition-shadow h-full flex flex-col">
+                <div class="flex items-center flex-1">
                     <div class="flex-shrink-0">
                         <div class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center">
                             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -94,7 +111,7 @@
                             </svg>
                         </div>
                     </div>
-                    <div class="ml-4">
+                    <div class="ml-4 flex-1">
                         <p class="text-sm font-medium text-green-700">Done</p>
                         <p class="text-3xl font-bold text-green-900">{{ $statusCounts['done'] ?? 0 }}</p>
                     </div>
@@ -102,8 +119,8 @@
             </div>
 
             <!-- Canceled -->
-            <div class="bg-gradient-to-br from-red-50 to-red-100 rounded-xl shadow-sm border border-red-200 p-6 hover:shadow-md transition-shadow">
-                <div class="flex items-center">
+            <div class="bg-gradient-to-br from-red-50 to-red-100 rounded-xl shadow-sm border border-red-200 p-6 hover:shadow-md transition-shadow h-full flex flex-col">
+                <div class="flex items-center flex-1">
                     <div class="flex-shrink-0">
                         <div class="w-12 h-12 bg-red-500 rounded-lg flex items-center justify-center">
                             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -111,7 +128,7 @@
                             </svg>
                         </div>
                     </div>
-                    <div class="ml-4">
+                    <div class="ml-4 flex-1">
                         <p class="text-sm font-medium text-red-700">Canceled</p>
                         <p class="text-3xl font-bold text-red-900">{{ $statusCounts['canceled'] ?? 0 }}</p>
                     </div>
@@ -129,6 +146,7 @@
                         <select name="status" id="status" class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 sm:text-sm transition-all duration-200 hover:border-gray-400 py-3 px-4">
                             <option value="all" {{ request('status') === 'all' || !request('status') ? 'selected' : '' }}>All Statuses</option>
                             <option value="on_hold" {{ request('status') === 'on_hold' ? 'selected' : '' }}>On Hold</option>
+                            <option value="received" {{ request('status') === 'received' ? 'selected' : '' }}>Received</option> <!-- UPDATED -->
                             <option value="in_progress" {{ request('status') === 'in_progress' ? 'selected' : '' }}>In Progress</option>
                             <option value="done" {{ request('status') === 'done' ? 'selected' : '' }}>Done</option>
                             <option value="canceled" {{ request('status') === 'canceled' ? 'selected' : '' }}>Canceled</option>
@@ -237,7 +255,7 @@
                             <th class="py-4 pl-6 pr-3 text-left">
                                 <input type="checkbox" id="selectAll" form="bulkForm" class="rounded border-gray-300 text-orange-600 focus:ring-orange-500 w-4 h-4">
                             </th>
-                            <th class="px-4 py-4 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider">Entry #</th>
+                            <th class="px-4 py-4 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider">Entry</th>
                             <th class="px-4 py-4 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider">Store</th>
                             <th class="px-4 py-4 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider">Requester</th>
                             <th class="px-4 py-4 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider">Equipment</th>
@@ -245,6 +263,7 @@
                             <th class="px-4 py-4 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider">Status</th>
                             <th class="px-4 py-4 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider">Assigned To</th>
                             <th class="px-4 py-4 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider">Due Date</th>
+                            <th class="px-4 py-4 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider">Task End Date</th>
                             <th class="px-4 py-4 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider">Date</th>
                             <th class="px-4 py-4 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider">Cognito Status</th>
                             <th class="px-4 py-4 text-left text-xs font-semibold text-gray-900 uppercase tracking-wider">Actions</th>
@@ -252,12 +271,17 @@
                         </thead>
                         <tbody class="divide-y divide-gray-200">
                         @foreach($maintenanceRequests as $index => $request)
-                            <tr class="{{ $index % 2 == 0 ? 'bg-white' : 'bg-gray-50' }} hover:bg-orange-50 transition-colors duration-150 cursor-pointer">
+                            <tr class="{{ ($index % 2 == 0) ? 'bg-white' : 'bg-gray-50' }} hover:bg-orange-50 transition-colors duration-150 cursor-pointer">
                                 <td class="py-4 pl-6 pr-3">
                                     <input type="checkbox" form="bulkForm" name="request_ids[]" value="{{ $request->id }}" class="request-checkbox rounded border-gray-300 text-orange-600 focus:ring-orange-500 w-4 h-4">
                                 </td>
                                 <td class="px-4 py-4 text-sm font-bold text-gray-900">
-                                    <span class="bg-gray-100 px-2 py-1 rounded-lg">{{ $request->entry_number ?? $request->id }}</span>
+                                    <span class="bg-gray-100 px-2 py-1 rounded-lg">#{{ $request->entry_number ?? $request->id }}</span>
+                                    @if(($request->source ?? 'cognito') === 'manual')
+                                        <span class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800">Manual</span>
+                                    @else
+                                        <span class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700">Cognito</span>
+                                    @endif
                                 </td>
                                 <td class="px-4 py-4 text-sm text-gray-600">
                                     @if($request->store && is_object($request->store))
@@ -270,19 +294,15 @@
                                 <td class="px-4 py-4 text-sm text-gray-600">
                                     <div class="flex items-center">
                                         <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center mr-3">
-                                            <span class="text-xs font-medium text-gray-700">
-                                                {{ substr($request->requester->first_name ?? 'N', 0, 1) }}{{ substr($request->requester->last_name ?? 'A', 0, 1) }}
-                                            </span>
+                                            <span class="text-xs font-medium text-gray-700">{{ substr($request->requester->first_name ?? 'N', 0, 1) }}{{ substr($request->requester->last_name ?? 'A', 0, 1) }}</span>
                                         </div>
                                         <div>
-                                            <div class="font-medium text-gray-900">{{ $request->requester->first_name ?? 'N/A' }} {{ $request->requester->last_name ?? '' }}</div>
+                                            <div class="font-medium text-gray-900">{{ ($request->requester->first_name ?? 'N/A') }} {{ ($request->requester->last_name ?? '') }}</div>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="px-4 py-4 text-sm text-gray-600 max-w-xs">
-                                    <div class="truncate" title="{{ $request->equipment_with_issue ?? 'No Equipment' }}">
-                                        {{ Str::limit($request->equipment_with_issue ?? 'No Equipment', 30) }}
-                                    </div>
+                                    <div class="truncate" title="{{ $request->equipment_with_issue ?? 'No Equipment' }}">{{ Str::limit($request->equipment_with_issue ?? 'No Equipment', 30) }}</div>
                                 </td>
                                 <td class="px-4 py-4 text-sm">
                                     @if($request->urgencyLevel)
@@ -290,100 +310,111 @@
                                             @case('Critical')
                                             @case('Impacts Sales')
                                                 <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800 border border-red-200">
-                                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                                                    </svg>
-                                                    {{ $request->urgencyLevel->name }}
-                                                </span>
+                                                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                                        </svg>
+                                                        {{ $request->urgencyLevel->name }}
+                                                    </span>
                                                 @break
                                             @case('High')
                                                 <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-orange-100 text-orange-800 border border-orange-200">
-                                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path fill-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732L14.146 12.8l-1.179 4.456a1 1 0 01-1.934 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732L9.854 7.2l1.179-4.456A1 1 0 0112 2z" clip-rule="evenodd"></path>
-                                                    </svg>
-                                                    {{ $request->urgencyLevel->name }}
-                                                </span>
+                                                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732L14.146 12.8l-1.179 4.456a1 1 0 01-1.934 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732L9.854 7.2l1.179-4.456A1 1 0 0112 2z" clip-rule="evenodd"></path>
+                                                        </svg>
+                                                        {{ $request->urgencyLevel->name }}
+                                                    </span>
                                                 @break
                                             @case('Medium')
                                                 <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800 border border-yellow-200">
-                                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
-                                                    </svg>
-                                                    {{ $request->urgencyLevel->name }}
-                                                </span>
+                                                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                                                        </svg>
+                                                        {{ $request->urgencyLevel->name }}
+                                                    </span>
                                                 @break
                                             @case('Low')
                                                 <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800 border border-green-200">
-                                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                                    </svg>
-                                                    {{ $request->urgencyLevel->name }}
-                                                </span>
+                                                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                                        </svg>
+                                                        {{ $request->urgencyLevel->name }}
+                                                    </span>
                                                 @break
                                         @endswitch
                                     @else
-                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                            Unknown
-                                        </span>
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">Unknown</span>
                                     @endif
                                 </td>
                                 <td class="px-4 py-4 text-sm">
                                     @switch($request->status)
                                         @case('on_hold')
                                             <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800 border border-yellow-200">
-                                                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                                                </svg>
-                                                On Hold
-                                            </span>
+                                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                                    </svg>
+                                                    On Hold
+                                                </span>
+                                            @break
+                                        @case('received')
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-800 border border-purple-200">
+                                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                                    </svg>
+                                                    Received
+                                                </span>
                                             @break
                                         @case('in_progress')
                                             <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 border border-blue-200">
-                                                <svg class="w-3 h-3 mr-1 animate-spin" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"></path>
-                                                </svg>
-                                                In Progress
-                                            </span>
+                                                    <svg class="w-3 h-3 mr-1 animate-spin" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"></path>
+                                                    </svg>
+                                                    In Progress
+                                                </span>
                                             @break
                                         @case('done')
                                             <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800 border border-green-200">
-                                                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                                </svg>
-                                                Done
-                                            </span>
+                                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                                    </svg>
+                                                    Done
+                                                </span>
                                             @break
                                         @case('canceled')
                                             <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800 border border-red-200">
-                                                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
-                                                </svg>
-                                                Canceled
-                                            </span>
+                                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                                                    </svg>
+                                                    Canceled
+                                                </span>
                                             @break
                                     @endswitch
                                 </td>
                                 <td class="px-4 py-4 text-sm text-gray-600">
-                                    @if($request->effective_assigned_user)
+                                    @if($request->source === 'manual' && !$request->assigned_to && $request->createdByUser)
+                                        <div class="flex items-center">
+                                            <div class="w-6 h-6 bg-orange-400 rounded-full flex items-center justify-center mr-2">
+                                                <span class="text-xs font-medium text-white">{{ substr($request->createdByUser->name, 0, 1) }}</span>
+                                            </div>
+                                            <div>
+                                                <div class="font-medium text-gray-900">{{ $request->createdByUser->name }}</div>
+                                                <div class="text-xs text-gray-500">Created By</div>
+                                            </div>
+                                        </div>
+                                    @elseif($request->effective_assigned_user)
                                         <div class="flex items-center">
                                             <div class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center mr-2">
-                <span class="text-xs font-medium text-white">
-                    {{ substr($request->effective_assigned_user->name, 0, 1) }}
-                </span>
+                                                <span class="text-xs font-medium text-white">{{ substr($request->effective_assigned_user->name, 0, 1) }}</span>
                                             </div>
                                             <div>
                                                 <div class="font-medium text-gray-900">{{ $request->effective_assigned_user->name }}</div>
-                                                <div class="text-xs text-gray-500">
-                                                    {{ $request->assignment_source === 'task_assignment' ? 'Task Assignment' : 'Direct Assignment' }}
-                                                </div>
+                                                <div class="text-xs text-gray-500">{{ $request->assignment_source == 'task_assignment' ? 'Task Assignment' : 'Direct Assignment' }}</div>
                                             </div>
                                         </div>
                                     @else
                                         <span class="text-gray-400 italic">Not Assigned</span>
                                     @endif
                                 </td>
-
-                                <!-- ✅ Display due date from latest TaskAssignment -->
+                                <!-- Due Date Column -->
                                 <td class="px-4 py-4 text-sm text-gray-600">
                                     @if($request->latestTaskAssignment && $request->latestTaskAssignment->due_date)
                                         <div class="flex items-center">
@@ -395,8 +426,34 @@
                                                 <div class="text-xs text-gray-500">{{ $request->latestTaskAssignment->due_date->format('g:i A') }}</div>
                                             </div>
                                         </div>
+                                    @elseif($request->due_date)
+                                        <div class="flex items-center">
+                                            <svg class="w-4 h-4 mr-1 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                            </svg>
+                                            <div>
+                                                <div class="font-medium text-gray-900">{{ $request->due_date->format('M d, Y') }}</div>
+                                                <div class="text-xs text-gray-500">Due Date</div>
+                                            </div>
+                                        </div>
                                     @else
-                                        <span class="text-gray-400">No Due Date Set</span>
+                                        <span class="text-gray-400">-</span>
+                                    @endif
+                                </td>
+                                <!-- Task End Date Column -->
+                                <td class="px-4 py-4 text-sm text-gray-600">
+                                    @if($request->task_end_date)
+                                        <div class="flex items-center">
+                                            <svg class="w-4 h-4 mr-1 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                            <div>
+                                                <div class="font-medium text-gray-900">{{ $request->task_end_date->format('M d, Y') }}</div>
+                                                <div class="text-xs text-gray-500">{{ $request->task_end_date->format('g:i A') }}</div>
+                                            </div>
+                                        </div>
+                                    @else
+                                        <span class="text-gray-400">-</span>
                                     @endif
                                 </td>
                                 <td class="px-4 py-4 text-sm text-gray-600">
@@ -414,24 +471,23 @@
                                 <td class="px-4 py-4 text-sm">
                                     @if($request->not_in_cognito)
                                         <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-200">
-                                            <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd"></path>
-                                            </svg>
-                                            Local Only
-                                        </span>
+                                                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd"></path>
+                                                </svg>
+                                                Local Only
+                                            </span>
                                     @else
                                         <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
-                                            <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                            </svg>
-                                            Synced
-                                        </span>
+                                                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                                </svg>
+                                                Synced
+                                            </span>
                                     @endif
                                 </td>
                                 <td class="px-4 py-4 text-sm">
                                     <div class="flex space-x-2">
-                                        <a href="{{ route('maintenance-requests.show', $request) }}"
-                                           class="text-blue-600 hover:text-blue-900 font-medium hover:underline transition-colors">View</a>
+                                        <a href="{{ route('maintenance-requests.show', $request) }}" class="text-blue-600 hover:text-blue-900 font-medium hover:underline transition-colors">View</a>
                                         <form action="{{ route('maintenance-requests.destroy', $request) }}" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this request?')">
                                             @csrf
                                             @method('DELETE')
@@ -446,31 +502,21 @@
                 </div>
 
                 <!-- Enhanced Pagination -->
-                <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
-                    <div class="flex justify-between items-center">
-                        <div class="text-sm text-gray-700">
-                            Showing <span class="font-medium">{{ $maintenanceRequests->firstItem() ?? 0 }}</span> to
-                            <span class="font-medium">{{ $maintenanceRequests->lastItem() ?? 0 }}</span> of
-                            <span class="font-medium">{{ $maintenanceRequests->total() ?? 0 }}</span> results
-                        </div>
-                        <div class="flex space-x-1">
-                            {{ $maintenanceRequests->links() }}
-                        </div>
-                    </div>
+                <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 text-center">
+                    {{ $maintenanceRequests->links() }}
                 </div>
             @else
                 <div class="text-center py-16">
                     <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
                     </svg>
                     <h3 class="mt-4 text-lg font-medium text-gray-900">No maintenance requests found</h3>
                     <p class="mt-2 text-sm text-gray-500">No requests match your current filters. Try adjusting your search criteria.</p>
                 </div>
             @endif
         </div>
-
         <!-- Enhanced Ticket Report Modal -->
-        <div id="ticketReportModal" class="hidden fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div id="ticketReportModal" class="hidden fixed inset-0 bg-opacity-50 overflow-y-auto h-full w-full z-50">
             <div class="relative top-4 mx-auto p-5 border w-11/12 max-w-7xl shadow-2xl rounded-xl bg-white">
                 <div class="mt-3">
                     <div class="flex justify-between items-center mb-6">
@@ -719,17 +765,11 @@
                     resolve(window.html2canvas);
                     return;
                 }
-
                 const script = document.createElement('script');
-                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-                script.onload = () => {
-                    if (window.html2canvas) {
-                        resolve(window.html2canvas);
-                    } else {
-                        reject(new Error('html2canvas failed to load'));
-                    }
-                };
-                script.onerror = () => reject(new Error('Failed to load html2canvas script'));
+                // Use the correct html2canvas-pro CDN URL
+                script.src = 'https://cdn.jsdelivr.net/npm/html2canvas-pro@latest/dist/html2canvas-pro.min.js';
+                script.onload = () => resolve(window.html2canvas);
+                script.onerror = reject;
                 document.head.appendChild(script);
             });
         }
@@ -757,7 +797,7 @@
         function showLanguageSelection(modalId, type) {
             const languageModal = document.createElement('div');
             languageModal.id = 'languageSelectionModal';
-            languageModal.className = 'fixed inset-0 bg-black bg-opacity-50 z-[110] flex items-center justify-center';
+            languageModal.className = 'fixed inset-0 bg-opacity-50 z-[110] flex items-center justify-center';
             languageModal.innerHTML = `
             <div class="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
                 <div class="text-center mb-6">
@@ -776,6 +816,12 @@
                             class="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors">
                         <span class="text-2xl mr-3">🇸🇦</span>
                         <span class="font-medium">العربية (Arabic)</span>
+                    </button>
+
+                    <button onclick="proceedWithScreenshot('${modalId}', '${type}', 'es')"
+                            class="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors">
+                        <span class="text-2xl mr-3">🇪🇸</span>
+                        <span class="font-medium">Español (Spanish)</span>
                     </button>
                 </div>
 
@@ -1007,7 +1053,8 @@
                     'Urgency': 'الأولوية',
                     'Status': 'الحالة',
                     'Assigned To': 'تم التعيين لـ',
-                    'Due Date': 'تاريخ الاستحقاق',
+                    'Due Date': 'تاريخ التسليم',
+                    'Task End Date': 'تاريخ الصيانة',
                     'Created Date': 'تاريخ الإنشاء',
                     'Costs': 'التكاليف',
                     'On Hold': 'قيد الانتظار',
@@ -1037,23 +1084,124 @@
         }
 
 
-        function resetLanguageStyles() {
+        function applyLanguageStyles(language) {
             const contentElement = document.querySelector('#ticketReportContent');
             if (!contentElement) return;
 
-            // Reset direction and text alignment
-            contentElement.style.direction = '';
-            contentElement.style.textAlign = '';
+            if (language === 'ar') {
+                // Apply Arabic styling
+                contentElement.style.direction = 'rtl';
+                contentElement.style.textAlign = 'right';
 
-            // Restore original text content
-            contentElement.querySelectorAll('[data-original-text]').forEach(element => {
-                const originalText = element.getAttribute('data-original-text');
-                if (originalText) {
-                    element.textContent = originalText;
-                    element.removeAttribute('data-original-text');
+                // Fix table layout for RTL
+                const table = contentElement.querySelector('table');
+                if (table) {
+                    table.style.direction = 'rtl';
+                    table.style.textAlign = 'right';
+
+                    // Fix table cells alignment
+                    const allCells = table.querySelectorAll('th, td');
+                    allCells.forEach(cell => {
+                        cell.style.textAlign = 'right';
+                        cell.style.direction = 'rtl';
+                    });
                 }
-            });
+
+                // Enhanced translation mapping with more comprehensive coverage
+                const elementsToTranslate = {
+                    'Ticket Report': 'تقرير طلبات الصيانة',
+                    'Entry #': 'رقم الإدخال',
+                    'Store': 'المتجر',
+                    'Requester': 'مقدم الطلب',
+                    'Equipment': 'المعدات',
+                    'Issue Description': 'وصف المشكلة',
+                    'Description': 'الوصف',
+                    'Urgency': 'الأولوية',
+                    'Status': 'الحالة',
+                    'Assigned to': 'مُسند إلى',           // Header translation
+                    'Due Date': 'تاريخ انتهاء الطلب',
+                    'Task End Date': 'تاريخ الصيانة',
+                    'Created Date': 'تاريخ الإنشاء',
+                    'Date Created': 'تاريخ الإنشاء',
+                    'Costs': 'التكاليف',
+                    'Total Cost': 'إجمالي التكلفة',
+                    'Actions': 'الإجراءات',
+                    'On Hold': 'قيد الانتظار',
+                    'In Progress': 'قيد التنفيذ',
+                    'Done': 'مكتمل',
+                    'Completed': 'مكتمل',
+                    'Canceled': 'ملغي',
+                    'Cancelled': 'ملغي',
+                    'received': 'تم تلقيه',
+                    'High': 'عالي',
+                    'Medium': 'متوسط',
+                    'Low': 'منخفض',
+                    'Critical': 'حرج',
+                    'Impacts Sales': 'يؤثر على المبيعات',
+                    'Not Assigned': 'غير مُعيَّن',
+                    'No Due Date': 'لا يوجد تاريخ استحقاق',
+                    'N/A': 'غير متاح',
+                    'Total': 'الإجمالي',
+                    'Summary': 'ملخص',
+                    // Add header variations that might exist
+                    'Maintenance Requests Report': 'تقرير طلبات الصيانة',
+                    'Report': 'تقرير'
+                };
+
+                // Apply translations with more thorough searching
+                function translateElement(element, englishText, arabicText) {
+                    // Check exact match
+                    if (element.textContent && element.textContent.trim() === englishText) {
+                        element.setAttribute('data-original-text', element.textContent);
+                        element.textContent = arabicText;
+                        return true;
+                    }
+
+                    // Check if element contains the text (for cases where there might be extra spaces)
+                    if (element.textContent && element.textContent.trim().includes(englishText)) {
+                        element.setAttribute('data-original-text', element.textContent);
+                        element.textContent = element.textContent.replace(englishText, arabicText);
+                        return true;
+                    }
+
+                    return false;
+                }
+
+                // Apply translations to all possible elements
+                Object.keys(elementsToTranslate).forEach(englishText => {
+                    const arabicText = elementsToTranslate[englishText];
+
+                    // Search in headers first
+                    const headers = contentElement.querySelectorAll('h1, h2, h3, h4, h5, h6');
+                    headers.forEach(header => translateElement(header, englishText, arabicText));
+
+                    // Search in table headers
+                    const tableHeaders = contentElement.querySelectorAll('th');
+                    tableHeaders.forEach(th => translateElement(th, englishText, arabicText));
+
+                    // Search in table cells
+                    const tableCells = contentElement.querySelectorAll('td');
+                    tableCells.forEach(td => translateElement(td, englishText, arabicText));
+
+                    // Search in other elements
+                    const otherElements = contentElement.querySelectorAll('p, span, div, label');
+                    otherElements.forEach(el => translateElement(el, englishText, arabicText));
+                });
+
+                // Force update for main header if it exists
+                const mainHeader = contentElement.querySelector('h1');
+                if (mainHeader && !mainHeader.getAttribute('data-original-text')) {
+                    mainHeader.setAttribute('data-original-text', mainHeader.textContent);
+                    mainHeader.textContent = 'تقرير طلبات الصيانة';
+                    mainHeader.style.textAlign = 'right';
+                }
+
+            } else {
+                // English is default, reset any previous Arabic styling
+                resetLanguageStyles();
+            }
         }
+
 
         function showScreenshotLoading(modalId) {
             const modal = document.getElementById(modalId);
@@ -1135,6 +1283,23 @@
                     }
                 }, 300);
             }, 5000);
+        }
+        function resetLanguageStyles(modalId) {
+            const contentElement = document.querySelector(`#${modalId} .modal-content`);
+            if (!contentElement) return;
+
+            // Reset direction and text alignment
+            contentElement.style.direction = '';
+            contentElement.style.textAlign = '';
+
+            // Restore original text content
+            contentElement.querySelectorAll('[data-original-text]').forEach(element => {
+                const originalText = element.getAttribute('data-original-text');
+                if (originalText) {
+                    element.textContent = originalText;
+                    element.removeAttribute('data-original-text');
+                }
+            });
         }
 
     </script>

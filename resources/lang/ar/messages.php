@@ -105,6 +105,47 @@ return [
     'car_clock_out_validation' => 'عند الانصراف باستخدام السيارة، يجب إدخال الأميال ورفع الصورة.',
     'purchase_validation' => 'عند اختيار نعم للشراء، يجب إدخال تكلفة الشراء وتحميل صورة الإيصال.',
 
+    // Missing keys from views
+    'Update Password' => 'تحديث كلمة المرور',
+    'Ensure your account is using a long, random password to stay secure.' => 'تأكد من أن حسابك يستخدم كلمة مرور طويلة وعشوائية للبقاء آمناً.',
+    'Current Password' => 'كلمة المرور الحالية',
+    'New Password' => 'كلمة المرور الجديدة',
+    'Confirm Password' => 'تأكيد كلمة المرور',
+    'Save' => 'حفظ',
+    'Saved.' => 'تم الحفظ.',
+    'Profile' => 'الملف الشخصي',
+    'Dashboard' => 'لوحة التحكم',
+    'This is a secure area of the application. Please confirm your password before continuing.' => 'هذه منطقة آمنة من التطبيق. يرجى تأكيد كلمة المرور قبل المتابعة.',
+    'Password' => 'كلمة المرور',
+    'Confirm' => 'تأكيد',
+    'Log Out' => 'تسجيل الخروج',
+    'Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.' => 'نسيت كلمة المرور؟ لا مشكلة. فقط أخبرنا بعنوان بريدك الإلكتروني وسنرسل لك رابط إعادة تعيين كلمة المرور.',
+    'Email' => 'البريد الإلكتروني',
+    'Email Password Reset Link' => 'إرسال رابط إعادة تعيين كلمة المرور',
+    'Name' => 'الاسم',
+    'Already registered?' => 'مسجل بالفعل؟',
+    'Register' => 'تسجيل',
+    'Reset Password' => 'إعادة تعيين كلمة المرور',
+    'Profile Information' => 'معلومات الملف الشخصي',
+    'Your email address is unverified.' => 'عنوان بريدك الإلكتروني غير مؤكد.',
+    'Click here to re-send the verification email.' => 'انقر هنا لإعادة إرسال بريد التحقق.',
+    'A new verification link has been sent to your email address.' => 'تم إرسال رابط تحقق جديد إلى عنوان بريدك الإلكتروني.',
+    'Delete Account' => 'حذف الحساب',
+    'Once your account is deleted, all of its resources and data will be permanently deleted. Before deleting your account, please download any data or information that you wish to retain.' => 'بمجرد حذف حسابك، سيتم حذف جميع موارده وبياناته نهائياً. قبل حذف حسابك، يرجى تنزيل أي بيانات أو معلومات تريد الاحتفاظ بها.',
+    'Are you sure you want to delete your account?' => 'هل أنت متأكد أنك تريد حذف حسابك؟',
+    'Once your account is deleted, all of its resources and data will be permanently deleted. Please enter your password to confirm you would like to permanently delete your account.' => 'بمجرد حذف حسابك، سيتم حذف جميع موارده وبياناته نهائياً. يرجى إدخال كلمة المرور لتأكيد رغبتك في حذف حسابك نهائياً.',
+    'Cancel' => 'إلغاء',
+    'A new verification link has been sent to the email address you provided during registration.' => 'تم إرسال رابط تحقق جديد إلى عنوان البريد الإلكتروني الذي قدمته أثناء التسجيل.',
+    'Resend Verification Email' => 'إعادة إرسال بريد التحقق',
+    'spanish' => 'Español',
+
+    // Pagination keys
+    'Pagination Navigation' => 'التنقل بين الصفحات',
+    'Showing' => 'عرض',
+    'to' => 'إلى',
+    'of' => 'من',
+    'results' => 'النتائج',
+
     // ✅ NEW: Schedule & Task Management Translations
     'my_schedule' => 'جدولي',
     'my_tasks' => 'مهامي',
@@ -239,4 +280,24 @@ return [
     'maintenance' => 'الصيانة',
     'reports' => 'التقارير',
     'settings' => 'الإعدادات',
+
+    'fix_question' => 'هل قمت بإصلاح شيء؟',
+    'fix_description' => 'وصف الإصلاح',
+    'fix_description_placeholder' => 'اكتب تفاصيل ما قمت بإصلاحه...',
+    'fix_image' => 'صورة الإصلاح',
+    'fix_validation' => 'يجب رفع صورة الإصلاح عند اختيار نعم',
+
+
+    // NEW: Add these keys for the clocking statistics cards
+    'scheduled_hours' => 'الساعات المجدولة',
+    'actual_hours_worked' => 'الساعات المعملة فعليًا',
+    'from_schedule' => 'من الجدولة',
+    'from_clocking' => 'من تسجيل الحضور',
+    'weekly_earnings' => 'الأرباح الأسبوعية',
+    'based_on_actual_hours' => 'بناءً على الساعات الفعلية',
+    'days_worked' => 'أيام العمل',
+    'this_week' => 'هذا الأسبوع',
+    'average_daily_hours' => 'متوسط الساعات اليومية',
+    'per_working_day' => 'لكل يوم عمل',
+
 ];

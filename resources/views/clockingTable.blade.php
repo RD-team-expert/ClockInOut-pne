@@ -133,6 +133,7 @@
                                     <th class="px-3 py-3.5 text-left text-sm font-semibold text-black-900">Total Miles</th>
                                     <th class="px-3 py-3.5 text-left text-sm font-semibold text-black-900">Gas Payment</th>
                                     <th class="px-3 py-3.5 text-left text-sm font-semibold text-black-900">Purchase Cost</th>
+                                    <th class="px-3 py-3.5 text-left text-sm font-semibold text-black-900">Fixed Something</th>
                                     <th class="px-3 py-3.5 text-left text-sm font-semibold text-black-900">Total Hours</th>
                                     <th class="px-3 py-3.5 text-left text-sm font-semibold text-black-900">Total Salary</th>
                                     <th class="px-3 py-3.5 text-left text-sm font-semibold text-black-900">Images</th>
@@ -169,6 +170,17 @@
                                         <td class="whitespace-nowrap px-3 py-4 text-sm text-black-500">
                                             ${{ number_format($clocking->purchase_cost ?? 0, 2) }}
                                         </td>
+
+                                        <!-- NEW: Fix Description Column -->
+                                        <td class="px-3 py-4 text-sm text-black-500 max-w-xs">
+                                            @if($clocking->fix_description)
+                                                <div class="truncate" title="{{ $clocking->fix_description }}">
+                                                    {{ $clocking->fix_description_short }}
+                                                </div>
+                                            @else
+                                                <span class="text-gray-400">-</span>
+                                            @endif
+                                        </td>
                                         <td class="whitespace-nowrap px-3 py-4 text-sm text-black-500">
                                             {{ $clocking->total_hours ?? '-' }}
                                         </td>
@@ -178,28 +190,160 @@
                                         <td class="whitespace-nowrap px-3 py-4 text-sm text-black-500">
                                             <div class="flex flex-row space-x-2">
                                                 @if ($clocking->image_in)
-                                                    <a href="{{ asset('storage/' . $clocking->image_in) }}"
-                                                       target="_blank" class="group">
-                                                        <img src="{{ asset('storage/' . $clocking->image_in) }}"
-                                                             alt="Clock In"
-                                                             class="h-10 w-10 rounded-lg object-cover ring-1 ring-orange-200 hover:ring-orange-500">
-                                                    </a>
+                                                    <button type="button"
+                                                            data-modal-target="clock-in-modal-{{ $clocking->id }}"
+                                                            data-modal-toggle="clock-in-modal-{{ $clocking->id }}"
+                                                            class="group relative flex items-center justify-center h-10 w-10 rounded-lg bg-blue-100 hover:bg-blue-200 ring-1 ring-blue-200 hover:ring-blue-500 transition-all duration-200"
+                                                            title="View Clock In Image">
+                                                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                        </svg>
+                                                        <div class="absolute -top-1 -left-1 bg-blue-500 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center">
+                                                            IN
+                                                        </div>
+                                                    </button>
+
+                                                    <!-- Clock In Modal -->
+                                                    <div id="clock-in-modal-{{ $clocking->id }}" tabindex="-1" aria-hidden="true"
+                                                         class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+                                                        <div class="relative p-4 w-full max-w-2xl max-h-full">
+                                                            <div class="relative bg-white rounded-lg shadow-lg dark:bg-gray-700">
+                                                                <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                                                                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Clock In Image</h3>
+                                                                    <button type="button"
+                                                                            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                                                                            data-modal-hide="clock-in-modal-{{ $clocking->id }}">
+                                                                        <svg class="w-3 h-3" aria-hidden="true" fill="none" viewBox="0 0 14 14">
+                                                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                                                                        </svg>
+                                                                    </button>
+                                                                </div>
+                                                                <div class="p-4 md:p-5">
+                                                                    <img src="{{ asset('storage/' . $clocking->image_in) }}"
+                                                                         alt="Clock In Image"
+                                                                         class="w-full max-h-96 object-contain rounded-lg">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 @endif
+
                                                 @if ($clocking->image_out)
-                                                    <a href="{{ asset('storage/' . $clocking->image_out) }}"
-                                                       target="_blank" class="group">
-                                                        <img src="{{ asset('storage/' . $clocking->image_out) }}"
-                                                             alt="Clock Out"
-                                                             class="h-10 w-10 rounded-lg object-cover ring-1 ring-orange-200 hover:ring-orange-500">
-                                                    </a>
+                                                    <button type="button"
+                                                            data-modal-target="clock-out-modal-{{ $clocking->id }}"
+                                                            data-modal-toggle="clock-out-modal-{{ $clocking->id }}"
+                                                            class="group relative flex items-center justify-center h-10 w-10 rounded-lg bg-red-100 hover:bg-red-200 ring-1 ring-red-200 hover:ring-red-500 transition-all duration-200"
+                                                            title="View Clock Out Image">
+                                                        <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                        </svg>
+                                                        <div class="absolute -top-1 -left-1 bg-red-500 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center">
+                                                            OUT
+                                                        </div>
+                                                    </button>
+
+                                                    <!-- Clock Out Modal -->
+                                                    <div id="clock-out-modal-{{ $clocking->id }}" tabindex="-1" aria-hidden="true"
+                                                         class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+                                                        <div class="relative p-4 w-full max-w-2xl max-h-full">
+                                                            <div class="relative bg-white rounded-lg shadow-lg dark:bg-gray-700">
+                                                                <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                                                                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Clock Out Image</h3>
+                                                                    <button type="button"
+                                                                            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                                                                            data-modal-hide="clock-out-modal-{{ $clocking->id }}">
+                                                                        <svg class="w-3 h-3" aria-hidden="true" fill="none" viewBox="0 0 14 14">
+                                                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                                                                        </svg>
+                                                                    </button>
+                                                                </div>
+                                                                <div class="p-4 md:p-5">
+                                                                    <img src="{{ asset('storage/' . $clocking->image_out) }}"
+                                                                         alt="Clock Out Image"
+                                                                         class="w-full max-h-96 object-contain rounded-lg">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 @endif
+
                                                 @if ($clocking->purchase_receipt)
-                                                    <a href="{{ asset('storage/' . $clocking->purchase_receipt) }}"
-                                                       target="_blank" class="group">
-                                                        <img src="{{ asset('storage/' . $clocking->purchase_receipt) }}"
-                                                             alt="Receipt"
-                                                             class="h-10 w-10 rounded-lg object-cover ring-1 ring-orange-200 hover:ring-orange-500">
-                                                    </a>
+                                                    <button type="button"
+                                                            data-modal-target="receipt-modal-{{ $clocking->id }}"
+                                                            data-modal-toggle="receipt-modal-{{ $clocking->id }}"
+                                                            class="group relative flex items-center justify-center h-10 w-10 rounded-lg bg-green-100 hover:bg-green-200 ring-1 ring-green-200 hover:ring-green-500 transition-all duration-200"
+                                                            title="View Purchase Receipt">
+                                                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 8h6m-5 0a3 3 0 110 6H9l3 3-3-3h1.5a1.5 1.5 0 000-3H9z"/>
+                                                        </svg>
+                                                        <div class="absolute -top-1 -left-1 bg-green-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                                                            $
+                                                        </div>
+                                                    </button>
+
+                                                    <!-- Receipt Modal -->
+                                                    <div id="receipt-modal-{{ $clocking->id }}" tabindex="-1" aria-hidden="true"
+                                                         class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+                                                        <div class="relative p-4 w-full max-w-2xl max-h-full">
+                                                            <div class="relative bg-white rounded-lg shadow-lg dark:bg-gray-700">
+                                                                <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                                                                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Purchase Receipt</h3>
+                                                                    <button type="button"
+                                                                            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                                                                            data-modal-hide="receipt-modal-{{ $clocking->id }}">
+                                                                        <svg class="w-3 h-3" aria-hidden="true" fill="none" viewBox="0 0 14 14">
+                                                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                                                                        </svg>
+                                                                    </button>
+                                                                </div>
+                                                                <div class="p-4 md:p-5">
+                                                                    <img src="{{ asset('storage/' . $clocking->purchase_receipt) }}"
+                                                                         alt="Purchase Receipt"
+                                                                         class="w-full max-h-96 object-contain rounded-lg">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @endif
+
+                                                @if ($clocking->fix_image)
+                                                    <button type="button"
+                                                            data-modal-target="fix-modal-{{ $clocking->id }}"
+                                                            data-modal-toggle="fix-modal-{{ $clocking->id }}"
+                                                            class="group relative flex items-center justify-center h-10 w-10 rounded-lg bg-purple-100 hover:bg-purple-200 ring-1 ring-purple-200 hover:ring-purple-500 transition-all duration-200"
+                                                            title="View Fix Image">
+                                                        <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                        </svg>
+                                                        <div class="absolute -top-1 -left-1 bg-purple-500 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center">
+                                                            FIX
+                                                        </div>
+                                                    </button>
+
+                                                    <!-- Fix Modal -->
+                                                    <div id="fix-modal-{{ $clocking->id }}" tabindex="-1" aria-hidden="true"
+                                                         class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+                                                        <div class="relative p-4 w-full max-w-2xl max-h-full">
+                                                            <div class="relative bg-white rounded-lg shadow-lg dark:bg-gray-700">
+                                                                <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                                                                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Fix Image</h3>
+                                                                    <button type="button"
+                                                                            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                                                                            data-modal-hide="fix-modal-{{ $clocking->id }}">
+                                                                        <svg class="w-3 h-3" aria-hidden="true" fill="none" viewBox="0 0 14 14">
+                                                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                                                                        </svg>
+                                                                    </button>
+                                                                </div>
+                                                                <div class="p-4 md:p-5">
+                                                                    <img src="{{ asset('storage/' . $clocking->fix_image) }}"
+                                                                         alt="Fix Image"
+                                                                         class="w-full max-h-96 object-contain rounded-lg">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 @endif
                                             </div>
                                         </td>
@@ -212,7 +356,9 @@
                                                         data-clock-out="{{ $clocking->clock_out ? Carbon\Carbon::parse($clocking->clock_out)->format('Y-m-d\TH:i') : '' }}"
                                                         data-miles-in="{{ $clocking->miles_in ?? '' }}"
                                                         data-miles-out="{{ $clocking->miles_out ?? '' }}"
-                                                        data-purchase-cost="{{ $clocking->purchase_cost ?? '' }}">
+                                                        data-purchase-cost="{{ $clocking->purchase_cost ?? '' }}"
+                                                        data-fixed-something="{{ $clocking->fixed_something ? '1' : '0' }}"
+                                                        data-fix-description="{{ $clocking->fix_description ?? '' }}">
                                                     Edit
                                                 </button>
                                                 <button type="button"
@@ -228,23 +374,15 @@
                                 <!-- Totals Row -->
                                 <tfoot class="bg-orange-50">
                                 <tr>
-                                    <th colspan="4" class="py-3.5 text-right text-sm font-semibold text-black-900">
+                                    <th colspan="9" class="py-3.5 text-right text-sm font-semibold text-black-900">
                                         Totals:
                                     </th>
+                                    <!-- NEW: Show total fixes -->
                                     <th class="px-3 py-3.5 text-sm text-black-500">
-                                        {{ $totalMilesIn }}
+                                        {{ $totalFixCount }} fixes
                                     </th>
                                     <th class="px-3 py-3.5 text-sm text-black-500">
-                                        {{ $totalMilesOut }}
-                                    </th>
-                                    <th class="px-3 py-3.5 text-sm text-black-500">
-                                        {{ $totalMiles }}
-                                    </th>
-                                    <th class="px-3 py-3.5 text-sm text-black-500">
-                                        {{ '$' . number_format($totalGasPayment, 2) }}
-                                    </th>
-                                    <th class="px-3 py-3.5 text-sm text-black-500">
-                                        {{ '$' . number_format($totalPurchaseCost, 2) }}
+                                        -
                                     </th>
                                     <th class="px-3 py-3.5 text-sm text-black-500">
                                         {{ $totalHoursFormatted }}
@@ -253,8 +391,10 @@
                                         {{ '$' . number_format($totalEarnings, 2) }}
                                     </th>
                                     <th></th>
+                                    <th></th>
                                 </tr>
                                 </tfoot>
+
                             </table>
                         </div>
                     </div>
@@ -277,7 +417,7 @@
             </div>
 
             <!-- Delete Confirmation Modal -->
-            <div id="deleteModal" class="fixed inset-0 flex items-center justify-center bg-orange-100 bg-opacity-50 hidden z-50">
+            <div id="deleteModal" class="fixed inset-0 flex items-center justify-center bg-opacity-50 hidden z-50">
                 <div class="bg-orange-50 rounded-lg ring-1 ring-orange-900/5 w-full max-w-md">
                     <div class="px-4 py-3 border-b border-orange-200">
                         <h3 class="text-lg font-medium text-black-900">Confirm Delete</h3>
@@ -301,7 +441,7 @@
             </div>
 
             <!-- Modal Popup for Updating Clocking Record -->
-            <div id="editModal" class="fixed inset-0 flex items-center justify-center bg-orange-100 bg-opacity-50 hidden z-50">
+            <div id="editModal" class="fixed inset-0 flex items-center justify-center bg-opacity-50 hidden z-50">
                 <div class="bg-orange-50 rounded-xl ring-1 ring-orange-900/5 w-full max-w-2xl transform transition-all">
                     <div class="px-6 py-4 border-b border-orange-200 flex justify-between items-center">
                         <h3 class="text-xl font-semibold text-black-900">Update Clocking Record</h3>
@@ -342,10 +482,26 @@
                                            class="block w-full rounded-lg border-orange-200 ring-1 ring-orange-900/5 focus:border-orange-500 focus:ring-orange-500 sm:text-sm transition-all duration-200">
                                 </div>
                                 <!-- Purchase Cost -->
-                                <div class="md:col-span-2">
+                                <div>
                                     <label for="purchase_cost" class="block text-sm font-medium text-black-700 mb-1">Purchase Cost ($)</label>
                                     <input type="number" name="purchase_cost" id="purchase_cost" step="0.01" min="0"
                                            class="block w-full rounded-lg border-orange-200 ring-1 ring-orange-900/5 focus:border-orange-500 focus:ring-orange-500 sm:text-sm transition-all duration-200">
+                                </div>
+                                <!-- NEW: Fixed Something -->
+                                <div>
+                                    <label for="fixed_something" class="block text-sm font-medium text-black-700 mb-1">Fixed Something</label>
+                                    <select name="fixed_something" id="fixed_something"
+                                            class="block w-full rounded-lg border-orange-200 ring-1 ring-orange-900/5 focus:border-orange-500 focus:ring-orange-500 sm:text-sm transition-all duration-200">
+                                        <option value="0">No</option>
+                                        <option value="1">Yes</option>
+                                    </select>
+                                </div>
+                                <!-- NEW: Fix Description -->
+                                <div class="md:col-span-2">
+                                    <label for="fix_description" class="block text-sm font-medium text-black-700 mb-1">Fix Description</label>
+                                    <textarea name="fix_description" id="fix_description" rows="3"
+                                              class="block w-full rounded-lg border-orange-200 ring-1 ring-orange-900/5 focus:border-orange-500 focus:ring-orange-500 sm:text-sm transition-all duration-200"
+                                              placeholder="Describe what was fixed..."></textarea>
                                 </div>
                             </div>
                         </div>
@@ -428,7 +584,35 @@
 
                         document.getElementById('editModal').classList.remove('hidden');
                     });
+                })// Update the edit button click handler
+                document.querySelectorAll('.edit-btn').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const clockingId = this.getAttribute('data-clocking-id');
+                        const clockIn = this.getAttribute('data-clock-in');
+                        const clockOut = this.getAttribute('data-clock-out');
+                        const milesIn = this.getAttribute('data-miles-in');
+                        const milesOut = this.getAttribute('data-miles-out');
+                        const purchaseCost = this.getAttribute('data-purchase-cost');
+                        const fixedSomething = this.getAttribute('data-fixed-something'); // NEW
+                        const fixDescription = this.getAttribute('data-fix-description'); // NEW
+
+                        // Clear previous values
+                        document.getElementById('editForm').reset();
+
+                        // Set new values
+                        document.getElementById('clocking_id').value = clockingId;
+                        document.getElementById('clock_in').value = clockIn || '';
+                        document.getElementById('clock_out').value = clockOut || '';
+                        document.getElementById('miles_in').value = milesIn || '';
+                        document.getElementById('miles_out').value = milesOut || '';
+                        document.getElementById('purchase_cost').value = purchaseCost || '';
+                        document.getElementById('fixed_something').value = fixedSomething || '0'; // NEW
+                        document.getElementById('fix_description').value = fixDescription || ''; // NEW
+
+                        document.getElementById('editModal').classList.remove('hidden');
+                    });
                 });
+
 
                 // Hide modal when close button or cancel button is clicked
                 closeModal.addEventListener('click', hideModal);
@@ -444,5 +628,37 @@
                         hideModal();
                     }
                 });
+
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Modal functionality
+                    const modalToggles = document.querySelectorAll('[data-modal-toggle]');
+                    const modalHides = document.querySelectorAll('[data-modal-hide]');
+
+                    modalToggles.forEach(toggle => {
+                        toggle.addEventListener('click', function() {
+                            const targetModal = document.getElementById(this.getAttribute('data-modal-target'));
+                            if (targetModal) {
+                                targetModal.classList.remove('hidden');
+                            }
+                        });
+                    });
+
+                    modalHides.forEach(hide => {
+                        hide.addEventListener('click', function() {
+                            const targetModal = document.getElementById(this.getAttribute('data-modal-hide'));
+                            if (targetModal) {
+                                targetModal.classList.add('hidden');
+                            }
+                        });
+                    });
+
+                    // Close modal when clicking backdrop
+                    document.addEventListener('click', function(e) {
+                        if (e.target.classList.contains('fixed') && e.target.classList.contains('z-50')) {
+                            e.target.classList.add('hidden');
+                        }
+                    });
+                });
+
             </script>
 @endsection

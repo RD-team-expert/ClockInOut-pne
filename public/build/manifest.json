@@ -1,13 +1,19 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-C0VKhPe3.css",
+    "file": "assets/app-BToMOYqs.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-CbEvcXly.js",
+    "file": "assets/app-BGDHvcUF.js",
     "name": "app",
     "src": "resources/js/app.js",
+    "isEntry": true
+  },
+  "resources/js/notifications.js": {
+    "file": "assets/notifications-DuKsdfkZ.js",
+    "name": "notifications",
+    "src": "resources/js/notifications.js",
     "isEntry": true
   }
 }

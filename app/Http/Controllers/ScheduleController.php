@@ -75,6 +75,8 @@ class ScheduleController extends Controller
             ->distinct()
             ->pluck('role')
             ->toArray();
+
+        session()->forget('success');
         return view('admin.schedules.create', compact(
             'startDate',
             'endDate',
@@ -134,6 +136,7 @@ class ScheduleController extends Controller
                         'assigned_user_id' => $item['employee_id'],
                         'schedule_shift_id' => $scheduleShift->id,
                         'assigned_at' => now(),
+                        'due_date' => $item['start_date'], // ✅ Use schedule date as due date
                         'status' => 'pending',
                         'priority' => 'normal',
                         'assignment_notes' => $shift['assignment_notes'] ?? null,
@@ -364,15 +367,22 @@ class ScheduleController extends Controller
                         if (!empty($shiftData['task_id'])) {
                             $existingTaskAssignment = $existingShift->taskAssignments->first();
 
+                            // ✅ Create due date using schedule date + shift end time
+                            $scheduleDate = $item['start_date']; // e.g., "2025-09-11"
+                            $shiftEndTime = $shiftData['end']; // e.g., "17:00"
+                            $scheduleDueDate = Carbon::parse($scheduleDate . ' ' . $shiftEndTime); // "2025-09-11 17:00:00"
+
                             if ($existingTaskAssignment) {
                                 // Update existing task assignment
                                 $existingTaskAssignment->update([
                                     'maintenance_request_id' => $shiftData['task_id'],
                                     'assigned_user_id' => $item['employee_id'],
+                                    'due_date' => $scheduleDueDate, // ✅ Now includes shift end time
                                     'assignment_notes' => $shiftData['assignment_notes'] ?? null,
                                 ]);
 
                                 $taskAssignmentId = $existingTaskAssignment->id;
+                                $taskAssignmentDueDate = $existingTaskAssignment->due_date;
                             } else {
                                 // Create new task assignment
                                 $newTaskAssignment = TaskAssignment::create([
@@ -381,18 +391,21 @@ class ScheduleController extends Controller
                                     'schedule_shift_id' => $existingShift->id,
                                     'assigned_at' => now(),
                                     'status' => 'pending',
+                                    'due_date' => $scheduleDueDate, // ✅ Now includes shift end time
                                     'priority' => 'normal',
                                     'assignment_notes' => $shiftData['assignment_notes'] ?? null,
                                     'assigned_by' => Auth::id(),
                                 ]);
 
                                 $taskAssignmentId = $newTaskAssignment->id;
+                                $taskAssignmentDueDate = $newTaskAssignment->due_date;
                             }
 
                             // ✅ UPDATE MAINTENANCE REQUEST
                             $maintenanceRequest = \App\Models\MaintenanceRequest::find($shiftData['task_id']);
                             if ($maintenanceRequest) {
                                 $maintenanceRequest->update([
+                                    'due_date' => $taskAssignmentDueDate, // ✅ Now has proper time
                                     'assignment_source' => 'task_assignment',
                                     'current_task_assignment_id' => $taskAssignmentId,
                                 ]);
@@ -401,6 +414,7 @@ class ScheduleController extends Controller
                                     'maintenance_request_id' => $shiftData['task_id'],
                                     'assignment_source' => 'task_assignment',
                                     'task_assignment_id' => $taskAssignmentId,
+                                    'due_date' => $taskAssignmentDueDate->format('Y-m-d H:i:s'),
                                 ]);
                             }
                         } else {
@@ -440,12 +454,18 @@ class ScheduleController extends Controller
 
                         // ✅ CREATE TASK ASSIGNMENT FOR NEW SHIFT
                         if (!empty($shiftData['task_id'])) {
+                            // ✅ Create due date using schedule date + shift end time
+                            $scheduleDate = $item['start_date']; // e.g., "2025-09-11"
+                            $shiftEndTime = $shiftData['end']; // e.g., "17:00"
+                            $scheduleDueDate = Carbon::parse($scheduleDate . ' ' . $shiftEndTime); // "2025-09-11 17:00:00"
+
                             $taskAssignment = TaskAssignment::create([
                                 'maintenance_request_id' => $shiftData['task_id'],
                                 'assigned_user_id' => $item['employee_id'],
                                 'schedule_shift_id' => $scheduleShift->id,
                                 'assigned_at' => now(),
                                 'status' => 'pending',
+                                'due_date' => $scheduleDueDate, // ✅ Now includes shift end time
                                 'priority' => 'normal',
                                 'assignment_notes' => $shiftData['assignment_notes'] ?? null,
                                 'assigned_by' => Auth::id(),
@@ -455,6 +475,7 @@ class ScheduleController extends Controller
                             $maintenanceRequest = \App\Models\MaintenanceRequest::find($shiftData['task_id']);
                             if ($maintenanceRequest) {
                                 $maintenanceRequest->update([
+                                    'due_date' => $taskAssignment->due_date, // ✅ Now has proper time
                                     'assignment_source' => 'task_assignment',
                                     'current_task_assignment_id' => $taskAssignment->id,
                                 ]);
@@ -463,6 +484,7 @@ class ScheduleController extends Controller
                                     'maintenance_request_id' => $shiftData['task_id'],
                                     'assignment_source' => 'task_assignment',
                                     'task_assignment_id' => $taskAssignment->id,
+                                    'due_date' => $taskAssignment->due_date->format('Y-m-d H:i:s'),
                                 ]);
                             }
                         }
@@ -531,6 +553,7 @@ class ScheduleController extends Controller
 
         return redirect()->route('admin.schedules.index')->with('success', $message);
     }
+
 
 
 

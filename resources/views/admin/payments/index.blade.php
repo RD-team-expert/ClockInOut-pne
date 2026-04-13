@@ -195,6 +195,35 @@
             </div>
         </div>
 
+        <!-- Equipment Statistics -->
+        @if(isset($stats['equipment_purchases']) && $stats['equipment_purchases'] > 0)
+            <div class="bg-gradient-to-br from-purple-50 to-white rounded-lg shadow-md p-6 mb-8 border-2 border-purple-200">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="bg-purple-600 rounded-lg p-3">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-black-900">Equipment Purchases Summary</h3>
+                            <p class="text-sm text-black-600">Admin equipment, parts & supplies tracking</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="text-center">
+                            <p class="text-sm font-medium text-black-700">Equipment Purchases</p>
+                            <p class="text-3xl font-bold text-purple-600">{{ $stats['equipment_purchases'] }}</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-sm font-medium text-black-700">Equipment Total</p>
+                            <p class="text-3xl font-bold text-purple-600">${{ number_format($stats['equipment_total'], 2) }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+
         <!-- Filters Section -->
         <div class="bg-orange-50 shadow-lg rounded-xl p-6 mb-8 transition-all duration-300 hover:shadow-xl border border-orange-200">
             <div class="flex justify-between items-center mb-4">
@@ -244,7 +273,7 @@
                         </select>
                     </div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
                     <div>
                         <label for="maintenance_type" class="block text-sm font-semibold text-black-700 mb-2">Maintenance Type</label>
                         <select name="maintenance_type" id="maintenance_type" class="block w-full rounded-xl border-orange-300 shadow-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 sm:text-sm transition-all duration-200 hover:bg-orange-100 py-3 px-4">
@@ -252,6 +281,14 @@
                             @foreach($maintenanceTypes as $type)
                                 <option value="{{ $type }}" {{ request('maintenance_type') === $type ? 'selected' : '' }}>{{ $type }}</option>
                             @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label for="has_equipment" class="block text-sm font-semibold text-black-700 mb-2">Equipment Filter</label>
+                        <select name="has_equipment" id="has_equipment" class="block w-full rounded-xl border-orange-300 shadow-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 sm:text-sm transition-all duration-200 hover:bg-orange-100 py-3 px-4">
+                            <option value="all" {{ request('has_equipment') === 'all' || !request('has_equipment') ? 'selected' : '' }}>All Payments</option>
+                            <option value="1" {{ request('has_equipment') === '1' ? 'selected' : '' }}>Has Equipment</option>
+                            <option value="0" {{ request('has_equipment') === '0' ? 'selected' : '' }}>No Equipment</option>
                         </select>
                     </div>
                     <div>
@@ -343,7 +380,19 @@
                                 <!-- Store Info -->
                                 <td class="px-3 py-4 text-sm">
                                     <div class="space-y-1">
-                                        <div class="font-medium text-black-900">{{ $payment->store }}</div>
+{{--                                        @dd($payment);--}}
+                                        <div class="font-medium text-black-900">
+                                            @if($payment->store)
+                                                {{ $payment->store->name }}
+                                            @elseif($payment->store_id)
+                                                @php
+                                                    $store = \App\Models\Store::find($payment->store_id);
+                                                @endphp
+                                                {{ $store ? $store->name : 'Store ID: ' . $payment->store_id }}
+                                            @else
+                                                Store Not Found
+                                            @endif
+                                        </div>
                                         <div class="text-black-700 text-xs">{{ $payment->date->format('M d, Y') }}</div>
                                         <div class="text-xs text-black-700">Week {{ $payment->week }}</div>
                                     </div>
@@ -356,11 +405,21 @@
                                         @if($payment->what_got_fixed)
                                             <div class="text-xs text-black-700">{{ $payment->what_got_fixed }}</div>
                                         @endif
-                                        @if($payment->maintenance_type)
-                                            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-orange-100 text-black-800">
-                                                {{ $payment->maintenance_type }}
-                                            </span>
-                                        @endif
+                                        <div class="flex flex-wrap gap-1">
+                                            @if($payment->maintenance_type)
+                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-orange-100 text-black-800">
+                                                    {{ $payment->maintenance_type }}
+                                                </span>
+                                            @endif
+                                            @if($payment->hasEquipment())
+                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-bold bg-purple-100 text-purple-800 border border-purple-300">
+                                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                                    </svg>
+                                                    Equipment
+                                                </span>
+                                            @endif
+                                        </div>
                                     </div>
                                 </td>
 
@@ -480,7 +539,7 @@
         <!-- Portfolio Analytics Modal -->
         <div id="portfolioModal" class="fixed inset-0 z-50 overflow-y-auto hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
             <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                <div class="fixed inset-0 bg-orange-100 bg-opacity-75 transition-opacity" aria-hidden="true" id="modalBackdrop"></div>
+                <div class="fixed  bg-opacity-75 transition-opacity" aria-hidden="true" id="modalBackdrop"></div>
 
                 <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
@@ -497,7 +556,7 @@
                         </div>
 
                         <!-- Store Selection -->
-                        <div class="mb-6 bg-orange-100 rounded-lg p-4">
+                        <div class="mb-6 rounded-lg p-4">
                             <h4 class="text-lg font-semibold text-black-900 mb-4">Select Stores for Analysis</h4>
                             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                 <div>
@@ -575,7 +634,7 @@
 
         <!-- Payment Report Modals -->
         <!-- Cost By Company Modal -->
-        <div id="costByCompanyModal" class="hidden fixed inset-0 bg-orange-100 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div id="costByCompanyModal" class="hidden fixed inset-0  bg-opacity-50 overflow-y-auto h-full w-full z-50">
             <div class="relative top-4 mx-auto p-5 border w-11/12 max-w-7xl shadow-lg rounded-md bg-orange-50">
                 <div class="mt-3">
                     <div class="flex justify-between items-center mb-4">
@@ -596,7 +655,7 @@
         </div>
 
         <!-- Monthly Report Modal -->
-        <div id="monthlyReportModal" class="hidden fixed inset-0 bg-orange-100 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div id="monthlyReportModal" class="hidden fixed inset-0  bg-opacity-50 overflow-y-auto h-full w-full z-50">
             <div class="relative top-4 mx-auto p-5 border w-11/12 max-w-7xl shadow-lg rounded-md bg-orange-50">
                 <div class="mt-3">
                     <div class="flex justify-between items-center mb-4">
@@ -617,7 +676,7 @@
         </div>
 
         <!-- Weekly Maintenance Modal -->
-        <div id="weeklyMaintenanceModal" class="hidden fixed inset-0 bg-orange-100 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div id="weeklyMaintenanceModal" class="hidden fixed inset-0  bg-opacity-50 overflow-y-auto h-full w-full z-50">
             <div class="relative top-4 mx-auto p-5 border w-11/12 max-w-7xl shadow-lg rounded-md bg-orange-50">
                 <div class="mt-3">
                     <div class="flex justify-between items-center mb-4">
@@ -638,7 +697,7 @@
         </div>
 
         <!-- Cost Per Store Yearly Modal -->
-        <div id="costPerStoreYearlyModal" class="hidden fixed inset-0 bg-orange-100 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div id="costPerStoreYearlyModal" class="hidden fixed inset-0  bg-opacity-50 overflow-y-auto h-full w-full z-50">
             <div class="relative top-4 mx-auto p-5 border w-11/12 max-w-7xl shadow-lg rounded-md bg-orange-50">
                 <div class="mt-3">
                     <div class="flex justify-between items-center mb-4">
@@ -659,7 +718,7 @@
         </div>
 
         <!-- Pending Projects Modal -->
-        <div id="pendingProjectsModal" class="hidden fixed inset-0 bg-orange-100 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div id="pendingProjectsModal" class="hidden fixed inset-0  bg-opacity-50 overflow-y-auto h-full w-full z-50">
             <div class="relative top-4 mx-auto p-5 border w-11/12 max-w-7xl shadow-lg rounded-md bg-orange-50">
                 <div class="mt-3">
                     <div class="flex justify-between items-center mb-4">
@@ -680,7 +739,7 @@
         </div>
 
         <!-- Store Image Modal -->
-        <div id="storeImageModal" class="hidden fixed inset-0 bg-orange-100 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div id="storeImageModal" class="hidden fixed inset-0 bg-opacity-50 overflow-y-auto h-full w-full z-50">
             <div class="relative top-4 mx-auto p-5 border w-11/12 max-w-lg shadow-lg rounded-md bg-orange-50">
                 <div class="mt-3">
                     <div class="flex justify-between items-center mb-4">
@@ -1186,9 +1245,9 @@
                     resolve(window.html2canvas);
                     return;
                 }
-
                 const script = document.createElement('script');
-                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+                // Use the correct html2canvas-pro CDN URL
+                script.src = 'https://cdn.jsdelivr.net/npm/html2canvas-pro@latest/dist/html2canvas-pro.min.js';
                 script.onload = () => resolve(window.html2canvas);
                 script.onerror = reject;
                 document.head.appendChild(script);
@@ -1203,7 +1262,7 @@
         function showLanguageSelection(modalId, type) {
             const languageModal = document.createElement('div');
             languageModal.id = 'languageSelectionModal';
-            languageModal.className = 'fixed inset-0 bg-black bg-opacity-50 z-[110] flex items-center justify-center';
+            languageModal.className = 'fixed inset-0  bg-opacity-50 z-[110] flex items-center justify-center';
             languageModal.innerHTML = `
             <div class="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
                 <div class="text-center mb-6">
@@ -1222,6 +1281,12 @@
                             class="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors">
                         <span class="text-2xl mr-3">🇸🇦</span>
                         <span class="font-medium">العربية (Arabic)</span>
+                    </button>
+
+                    <button onclick="proceedWithScreenshot('${modalId}', '${type}', 'es')"
+                            class="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors">
+                        <span class="text-2xl mr-3">🇪🇸</span>
+                        <span class="font-medium">Español (Spanish)</span>
                     </button>
                 </div>
 

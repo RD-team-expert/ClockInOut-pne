@@ -10,7 +10,7 @@
             <!-- Summary Statistics -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
                 <div class="bg-white rounded-lg shadow p-4 text-center">
-                    <div class="text-2xl font-bold text-[#ff671b]">{{ $stores->count() }}</div>
+                    <div class="text-2xl font-bold text-[#ff671b]">{{ $storeNames->count() }}</div>
                     <div class="text-sm text-gray-600">Active Stores</div>
                 </div>
                 <div class="bg-white rounded-lg shadow p-4 text-center">
@@ -35,7 +35,7 @@
 
             <!-- Excel-like Table -->
             <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-                @if($stores->count() > 0)
+                @if($storeNames->count() > 0)
                     <div class="overflow-x-auto">
                         <table class="min-w-full border-collapse" id="weeklyMaintenanceTable">
                             <thead>
@@ -98,10 +98,14 @@
                             <tbody id="weeklyMaintenanceBody">
                             @foreach($storeData as $index => $data)
                                 <tr class="{{ $index % 2 == 0 ? 'bg-gray-50' : 'bg-white' }} hover:bg-[#fff4ed]">
+
                                     <td class="border border-gray-300 px-4 py-3 text-sm text-center font-medium" data-sort="{{ $data['store'] }}">
-                                        <div class="flex items-center justify-center">
-                                            <div class="w-3 h-3 bg-[#ff671b] rounded-full mr-2"></div>
-                                            {{ $data['store'] }}
+                                        <div class="flex flex-col items-center justify-center">
+                                            <div class="flex items-center">
+                                                <div class="w-3 h-3 bg-[#ff671b] rounded-full mr-2"></div>
+                                                <span class="font-semibold">{{ $data['store'] }}</span>
+                                            </div>
+                                            <span class="text-xs text-gray-500 mt-1">Store #{{ $data['store_number'] }}</span>
                                         </div>
                                     </td>
 
@@ -186,7 +190,7 @@
                             <tfoot>
                             <tr class="bg-[#e55b17] text-white font-bold">
                                 <td class="border border-gray-300 px-4 py-4 text-sm text-center">
-                                    TOTALS ({{ $stores->count() }} stores)
+                                    TOTALS ({{ $storeNames->count() }} stores)
                                 </td>
                                 <td class="border border-gray-300 px-4 py-4 text-sm text-center">
                                     ${{ number_format($totalEquipmentCost, 2) }}
@@ -221,13 +225,7 @@
                 @endif
             </div>
 
-            <!-- Close Button -->
-            <div class="mt-6 text-center">
-                <button onclick="closeModal('weeklyMaintenanceModal')"
-                        class="inline-flex items-center px-4 py-2 bg-[#ff671b] text-white text-sm font-medium rounded hover:bg-[#e55b17]">
-                    Close
-                </button>
-            </div>
+
         </div>
     </div>
 
